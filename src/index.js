@@ -4,12 +4,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import ui from './ui.js';
+import UI from './ui.js';
+// TODO - Look into ServiceWorker to see if it is a good fit for this project
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
-    <ui />
+    <UI />
   </React.StrictMode>,
   document.getElementById('root')
 );

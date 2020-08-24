@@ -8,3 +8,8 @@
 // referenced by the UI layer to emulate rendered elements inside of the
 // DOM for event-handling.
 // - Layla A
+
+"use strict";
+
+import Engine from "./engine.js"
+export { Engine, Renderer }

@@ -9,6 +9,10 @@
 
 "use strict";
 
+// TODO - Import Editor from dedicated class
+// TODO - Import Login Session from dedicated class
+export const Engine = SpawnEngine();
+
 class Editor {
     constructor(data) {
         // Viewport used by the renderer
@@ -115,6 +119,4 @@ function SpawnEngine() {
     }
     return new Engine();
 }
-
-export const Engine = SpawnEngine();
 
