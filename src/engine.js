@@ -75,7 +75,7 @@ function SpawnEngine() {// Privatized by closure - only to be accessed by method
 
     // Relies on the above private methods to function
     class Engine {
-        async spawnEditor(id = "") {
+        static async spawnEditor(id = "") {
             // TODO - check for non-null editor and notify the user / save chart
             return new Promise((resolve, reject) => {
                 if (!id) {
@@ -92,33 +92,42 @@ function SpawnEngine() {// Privatized by closure - only to be accessed by method
                 }
 
                 editor = new Editor(EditorCache[id]);
-                return resolve({code: 0})
+                return resolve({
+                    code: 0,
+                    schema: editor.getSchema() // Return a schema object so the UI knows how to display the current editor
+                });
             }).catch(err => {
                 return err;
             });
         }
 
-        async loadChart(...args) {
+        static async loadChart(...args) {
             // TODO - Load a chart into currently loaded editor via user upload or backend storage
             // We'll only support user upload for now
         }
 
-        async saveChart(...args) {
+        static async saveChart(...args) {
             // TODO - Cache current chart in browser, store on backend if user has an account & space
         }
 
-        async exportChart(...args) {}
-        async addObject() {}
-        async rmvObject() {}
-        async addTimepoint() {}
-        async rmvTimepoint() {}
-        async setMeta() {}
-        async cycleSnap() {}
-        async cycleSpeed() {}
-        async timeShift() {}
-        async getSchema() {}
-        async getView() {}
-        async zoom() {}
+        static async exportChart(...args) {}
+        static async addObject() {}
+        static async rmvObject() {}
+        static async addTimepoint() {}
+        static async rmvTimepoint() {}
+        static async setMeta() {}
+        static async cycleSnap() {}
+        static async cycleSpeed() {}
+        static async timeShift() {}
+        static async getSchema() {
+            return editor.getSchema();
+        }
+        static async getView() {
+            return editor.getView();
+        }
+        static async zoom(amount) {
+            return editor.zoom(amount);
+        }
     }
     return new Engine();
 }
