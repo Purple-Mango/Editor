@@ -4,7 +4,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import UI from './ui.js';
+import UI from './UI.js';
 // TODO - Look into ServiceWorker to see if it is a good fit for this project
 import * as serviceWorker from './serviceWorker';
 

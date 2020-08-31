@@ -7,42 +7,50 @@
 // forward.
 // - Layla A
 
-"use strict";
-
-// TODO - Import Editor from dedicated class
 // TODO - Import Login Session from dedicated class
-export const Engine = SpawnEngine();
+import Editor from "./editor.js"
+export default SpawnEngine(); // TODO - export a single object rather than an expression
 
-class Editor {
-    constructor(data) {
-        // Viewport used by the renderer
-        this.viewport = {
-            // TODO - Define Me
-        };
+// TODO - fix these filepaths, make this less ugly
+// This is just to complete a task
+const EditorCache = (() => {
+    const fs = require("fs"), path = require("path");
+    const dirs = fs.readdirSync("./editors");
+    const editors = {};
+    let manifest, curpath, editor;
+    for (const dir of dirs) {
 
-        // Currently Loaded chart data
-        this.chart = null;
+        // Load Manifest
+        curpath = path.join(dir, "manifest.json");
+        if (!fs.existsSync(curpath))
+            continue; // Skip directory, no manifest
+        try {
+            manifest = JSON.parse(fs.readFileSync(curpath, "utf8"));
+        } catch (err) {
+            console.log(err);
+            continue;
+        }
 
-        // Current State of the editor process
-        this.state = {
-            // TODO - Define Me
-        };
-
-        // Object definitions for Notes and Timings
-        this.schema = data.schema;
-
-        // TODO - implement addon functions
-        this.logic = Editor.Logic(data.logic);
-
-        // TODO - add support for chart serializers that handle note data
-        this.serializer = Editor.Serializer(data.serializer);
+        // Load Editor Data
+        try {
+            editor = {
+                layout: fs.readFileSync(manifest.layout), // Work with Ethan to structure this
+                style: fs.readFileSync(manifest.style), // This, too. this will be the default skin.
+                schema: require(manifest.schema), // script file that exports object structure, game mode descriptors, and value enumerations
+                serializer: require(manifest.serializer) // script file that handles converting, reading, and writing to and from local and native formats
+            }
+        } catch (err) {
+            console.log(err);
+            continue;
+        }
+        editors[manifest.id] = editor;
+        console.log(`Editor ${manifest.id} loaded.`);
     }
+    return editors;
+});
 
-    // TODO - Implement these portions of the engine
-    static Logic() {}
-    static Serializer() {}
-}
 
+// TODO - Move to its own file when we start working on this
 class Login {
     constructor(data) {
         this.key = data.key || "";
@@ -58,11 +66,11 @@ class Login {
 }
 
 
-function SpawnEngine() {
-    // Privatized by closure - only to be accessed by methods in _Engine
+function SpawnEngine() {// Privatized by closure - only to be accessed by methods in _Engine
     let editor = null; // Active Chart Editor object
     let session = new Login(null); // Active Login-Session object
     let socket = null; // Socket that manages back-end connection
+
     const cache = []; // Inactive Chart Editor array
     const errors = []; // Collection of runtime Errors / Warnings
 
@@ -76,11 +84,7 @@ function SpawnEngine() {
                     return resolve({code: 0});
                 }
 
-                // TODO - Send Request to backend to collect current editor data.
-                // For now it will be hard-coded
-                let editorData = {}; // Assume this was fetched from backend and parsed as json
-
-                let index = editorData.indexOf[id];
+                let index = Object.keys(EditorCache).indexOf[id];
                 if (index < 0) {
                     return reject({
                         code: 1,
@@ -88,7 +92,7 @@ function SpawnEngine() {
                     });
                 }
 
-                editor = new Editor(editorData[index]);
+                editor = new Editor(EditorCache[id]);
                 return resolve({code: 0})
             }).catch(err => {
                 return err;

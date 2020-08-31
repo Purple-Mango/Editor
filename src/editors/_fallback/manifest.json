@@ -1,0 +1,7 @@
+{
+  "id": "_fallback",
+  "layout": "./_fallback/layout.mhtml",
+  "style": "./_fallback/style.mcss",
+  "schema": "./_fallback/schema.js",
+  "serializer": "./_fallback/serializer.js"
+}

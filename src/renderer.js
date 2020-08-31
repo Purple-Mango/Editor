@@ -11,5 +11,17 @@
 
 "use strict";
 
+import React from 'react';
+import ReactDOM from 'react-dom';
 import Engine from "./engine.js"
 export { Engine, Renderer }
+
+function spawnCanvas(props) {
+    // Privatized by closure
+
+}
+class Renderer extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+}
