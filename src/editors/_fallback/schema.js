@@ -7,18 +7,21 @@ module.exports = {
     input: {
         types: [
             {
-                name: "Note",
+                name: "Note", // Visible name
+                class: "note", // Class used in style and layout
                 value: 1 // Values are in binary and used for masking
             },
             {
                 name: "Hold",
+                class: "hold",
                 value: 2,
-                params: {
+                params: { // Extra parameters defining function
                     next: [3]
                 }
             },
             {
                 name: "Release",
+                class: "release",
                 value: 3,
                 params: {
                     last: [2]
