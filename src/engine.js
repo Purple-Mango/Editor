@@ -9,7 +9,6 @@
 
 // TODO - Import Login Session from dedicated class
 import Editor from "./editor.js"
-export default SpawnEngine(); // TODO - export a single object rather than an expression
 
 // TODO - fix these filepaths, make this less ugly
 // This is just to complete a task
@@ -123,4 +122,7 @@ function SpawnEngine() {// Privatized by closure - only to be accessed by method
     }
     return new Engine();
 }
+
+const Engine = SpawnEngine();
+export default Engine;
 
