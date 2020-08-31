@@ -1,12 +1,16 @@
+// Placeholder - rewrite in progress
+
+// React Imports
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import UI from './UI.js';
+// TODO - Look into ServiceWorker to see if it is a good fit for this project
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <UI />
   </React.StrictMode>,
   document.getElementById('root')
 );
