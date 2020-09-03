@@ -119,7 +119,7 @@ function SpawnEngine() {// Privatized by closure - only to be accessed by method
         static async cycleSnap(up) { return editor.cycleSnap(up); }
         static async setSnap(a, b) { return editor.setSnap(a, b); }
         static async cycleSpeed(up) { return editor.cycleSpeed(up); }
-        static async setSpeed() { return editor.setSpeed(amount); }
+        static async setSpeed(amount) { return editor.setSpeed(amount); }
         static async timeShift(delta) { return editor.timeShift(delta); }
         static async zoom(amount) { return editor.zoom(amount); }
         static getSchema() { return editor.getSchema(); }
