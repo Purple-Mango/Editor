@@ -65,7 +65,7 @@ class Login {
 }
 
 
-function SpawnEngine() {// Privatized by closure - only to be accessed by methods in _Engine
+function SpawnEngine(ctx) {// Privatized by closure - only to be accessed by methods in _Engine
     let editor = null; // Active Chart Editor object
     let session = new Login(null); // Active Login-Session object
     let socket = null; // Socket that manages back-end connection
@@ -73,11 +73,29 @@ function SpawnEngine() {// Privatized by closure - only to be accessed by method
     const cache = []; // Inactive Chart Editor array
     const errors = []; // Collection of runtime Errors / Warnings
 
-    // Relies on the above private methods to function
-    class Engine {
-        static async spawnEditor(id = "") {
+    // TODO - figure out if these are being done synchronously or asynchronously
+    const methods = {
+        async spawnEditor(id = "") {
+            if (editor instanceof Editor) {
+                // TODO - Implement these UI interface methods in the class making these engine calls.
+                if (!await this.menu("saveclose", editor.chart.title))
+                    return {
+                        code: -1 // Cancelled by user
+                    };
+            }
             // TODO - check for non-null editor and notify the user / save chart
             return new Promise((resolve, reject) => {
+                if (editor instanceof Editor) {
+                    // TODO - figure out how to handle serving menus and resuming
+
+                    /* let key = Engine.genKey();
+                    return resolve({
+                        code: -1,
+                        menu: "saveclose",
+
+                    });
+                    */
+                }
                 if (!id) {
                     editor = null;
                     return resolve({code: 0});
@@ -99,34 +117,38 @@ function SpawnEngine() {// Privatized by closure - only to be accessed by method
             }).catch(err => {
                 return err;
             });
-        }
-
-        // Editor Calls
-        static async loadChart(...args) {
+        },
+        loadChart(...args) {
             // TODO - Load a chart into currently loaded editor via user upload or backend storage
             // We'll only support user upload for now
-        }
-        static async saveChart(...args) {
+        },
+        saveChart(...args) {
             // TODO - Cache current chart in browser, store on backend if user has an account & space
-        }
-        static async exportChart(...args) {}
-        static async closeChart() { return editor.closeChart(); }
-        static async setMeta(key, ...args) { return editor.setMeta(key, ...args); }
-        static async addObject(time, ...args) { return editor.addObject(time, ...args); }
-        static async rmvObject(time) { return editor.rmvObject(time); }
-        static async addTimepoint(time, ...args) { return editor.addTimepoint(time, ...args); }
-        static async rmvTimepoint(time) { return editor.rmvTimepoint(time); }
-        static async cycleSnap(up) { return editor.cycleSnap(up); }
-        static async setSnap(a, b) { return editor.setSnap(a, b); }
-        static async cycleSpeed(up) { return editor.cycleSpeed(up); }
-        static async setSpeed(amount) { return editor.setSpeed(amount); }
-        static async timeShift(delta) { return editor.timeShift(delta); }
-        static async zoom(amount) { return editor.zoom(amount); }
-        static getSchema() { return editor.getSchema(); }
-        static async buildView() { return editor.buildView(); }
-        static async getView(/* delta */) { return editor.getView(); }
-    }
-    return new Engine();
+        },
+        exportChart(...args) {},
+        closeChart() { return editor.closeChart(); },
+        setMeta(key, ...args) { return editor.setMeta(key, ...args); },
+        addObject(time, ...args) { return editor.addObject(time, ...args); },
+        rmvObject(time) { return editor.rmvObject(time); },
+        addTimepoint(time, ...args) { return editor.addTimepoint(time, ...args); },
+        rmvTimepoint(time) { return editor.rmvTimepoint(time); },
+        cycleSnap(up) { return editor.cycleSnap(up); },
+        async setSnap(a, b) { return editor.setSnap(a, b); },
+        async cycleSpeed(up) { return editor.cycleSpeed(up); },
+        async setSpeed(amount) { return editor.setSpeed(amount); },
+        async timeShift(delta) { return editor.timeShift(delta); },
+        async zoom(amount) { return editor.zoom(amount); },
+        getSchema() { return editor.getSchema(); },
+        async buildView() { return editor.buildView(); },
+        async getView(/* delta */) { return editor.getView(); }
+    };
+
+    // This might be bad practice. we'll find out i guess shrugemoji lul ecksdee
+    // Hopefully this doesnt kill performance
+    for (const [key, ptr] of methods)
+        methods[key] = ptr.bind(ctx); // to bubble up things like menu events
+
+    return Object.assign(class Engine{}, methods);
 }
 
 const Engine = SpawnEngine();
