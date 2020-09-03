@@ -83,19 +83,7 @@ function SpawnEngine(ctx) {// Privatized by closure - only to be accessed by met
                         code: -1 // Cancelled by user
                     };
             }
-            // TODO - check for non-null editor and notify the user / save chart
             return new Promise((resolve, reject) => {
-                if (editor instanceof Editor) {
-                    // TODO - figure out how to handle serving menus and resuming
-
-                    /* let key = Engine.genKey();
-                    return resolve({
-                        code: -1,
-                        menu: "saveclose",
-
-                    });
-                    */
-                }
                 if (!id) {
                     editor = null;
                     return resolve({code: 0});
