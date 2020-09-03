@@ -101,33 +101,30 @@ function SpawnEngine() {// Privatized by closure - only to be accessed by method
             });
         }
 
+        // Editor Calls
         static async loadChart(...args) {
             // TODO - Load a chart into currently loaded editor via user upload or backend storage
             // We'll only support user upload for now
         }
-
         static async saveChart(...args) {
             // TODO - Cache current chart in browser, store on backend if user has an account & space
         }
-
         static async exportChart(...args) {}
-        static async addObject() {}
-        static async rmvObject() {}
-        static async addTimepoint() {}
-        static async rmvTimepoint() {}
-        static async setMeta() {}
-        static async cycleSnap() {}
-        static async cycleSpeed() {}
-        static async timeShift() {}
-        static async getSchema() {
-            return editor.getSchema();
-        }
-        static async getView() {
-            return editor.getView();
-        }
-        static async zoom(amount) {
-            return editor.zoom(amount);
-        }
+        static async closeChart() { return editor.closeChart(); }
+        static async setMeta(key, ...args) { return editor.setMeta(key, ...args); }
+        static async addObject(time, ...args) { return editor.addObject(time, ...args); }
+        static async rmvObject(time) { return editor.rmvObject(time); }
+        static async addTimepoint(time, ...args) { return editor.addTimepoint(time, ...args); }
+        static async rmvTimepoint(time) { return editor.rmvTimepoint(time); }
+        static async cycleSnap(up) { return editor.cycleSnap(up); }
+        static async setSnap(a, b) { return editor.setSnap(a, b); }
+        static async cycleSpeed(up) { return editor.cycleSpeed(up); }
+        static async setSpeed() { return editor.setSpeed(amount); }
+        static async timeShift(delta) { return editor.timeShift(delta); }
+        static async zoom(amount) { return editor.zoom(amount); }
+        static getSchema() { return editor.getSchema(); }
+        static async buildView() { return editor.buildView(); }
+        static async getView(/* delta */) { return editor.getView(); }
     }
     return new Engine();
 }
