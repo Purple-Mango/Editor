@@ -13,15 +13,23 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Engine from "./engine.js"
-export { Engine, Renderer }
+export default spawnRenderer
 
-function spawnCanvas(props) {
-    // Privatized by closure
+function spawnRenderer(engineCtx) {
+    const Engine = engineCtx;
 
-}
-class Renderer extends React.Component {
-    constructor(props) {
-        super(props);
+    // TODO
+    function spawnCanvas(props) {
+        // Privatized by closure
+
     }
+
+    // TODO
+    class Renderer extends React.Component {
+        constructor(props) {
+            super(props);
+        }
+    }
+
+    return new Renderer; // ??? TODO figure out how this file will work and what is being returned
 }

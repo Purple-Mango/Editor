@@ -65,10 +65,11 @@ class Login {
 }
 
 
-function SpawnEngine(ctx) {// Privatized by closure - only to be accessed by methods in _Engine
+function SpawnEngine() {// Privatized by closure - only to be accessed by methods in _Engine
     let editor = null; // Active Chart Editor object
     let session = new Login(null); // Active Login-Session object
     let socket = null; // Socket that manages back-end connection
+    let boundCtx = null; // Caller context required for user input events
 
     const cache = []; // Inactive Chart Editor array
     const errors = []; // Collection of runtime Errors / Warnings
@@ -76,6 +77,13 @@ function SpawnEngine(ctx) {// Privatized by closure - only to be accessed by met
     // TODO - figure out if these are being done synchronously or asynchronously
     const methods = {
         async spawnEditor(id = "") {
+            // Disable editor spawning without a bound context
+            if (boundCtx === null)
+                return {
+                    code: -2 // Caller Context unbound
+                };
+
+            // Check for existing editor instance and prompt a saveclose
             if (editor instanceof Editor) {
                 // TODO - Implement these UI interface methods in the class making these engine calls.
                 if (!await this.menu("saveclose", editor.chart.title))
@@ -83,12 +91,16 @@ function SpawnEngine(ctx) {// Privatized by closure - only to be accessed by met
                         code: -1 // Cancelled by user
                     };
             }
+
+            // Run spawneditor operation
             return new Promise((resolve, reject) => {
+                // Handle editor close
                 if (!id) {
                     editor = null;
                     return resolve({code: 0});
                 }
 
+                // Verify that requested editor exists in cache
                 let index = Object.keys(EditorCache).indexOf[id];
                 if (index < 0) {
                     return reject({
@@ -97,6 +109,7 @@ function SpawnEngine(ctx) {// Privatized by closure - only to be accessed by met
                     });
                 }
 
+                // Spawn editor and return schema to caller
                 editor = new Editor(EditorCache[id]);
                 return resolve({
                     code: 0,
@@ -131,14 +144,20 @@ function SpawnEngine(ctx) {// Privatized by closure - only to be accessed by met
         async getView(/* delta */) { return editor.getView(); }
     };
 
-    // This might be bad practice. we'll find out i guess shrugemoji lul ecksdee
-    // Hopefully this doesnt kill performance
-    for (const [key, ptr] of methods)
-        methods[key] = ptr.bind(ctx); // to bubble up things like menu events
-
-    return Object.assign(class Engine{}, methods);
+    return Object.assign(
+        new (class Engine{}), // Mostly for debugging and `instanceof`
+        methods, // static class methods bound to the caller context
+        function bindCtx(ctx) {
+            boundCtx = ctx;
+            // This might be bad practice. we'll find out i guess shrugemoji lul ecksdee
+            // Hopefully this doesnt kill performance
+            for (const [key, ptr] of Object.keys(this)) {
+                if (key === "bindCtx") // Dont overwrite the context of this function or we'll break re-bindings
+                    continue;
+                this[key] = ptr.bind(boundCtx); // to bubble up things like menu events
+            }
+        });
 }
 
-const Engine = SpawnEngine();
-export default Engine;
+export default SpawnEngine;
 
