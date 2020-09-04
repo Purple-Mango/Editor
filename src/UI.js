@@ -20,11 +20,45 @@
  * be able to handle will be provided in /docs/ui.md
  * - Layla A
  */
+
+// TODO - Refactor this entire thing so its less of a nightmare to look at
+
+// Import react depends and factory functions for engine and renderer
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Engine, Renderer } from './renderer.js';
-class UI {}; // TODO Implement me!!!
-export default UI;
+import spawnEngine from './engine.js';
+import spawnRenderer from './renderer.js';
+
+// Spawn other layers
+const Engine = spawnEngine();
+const Renderer = spawnRenderer(Engine);
+
+// UI Class declaration - either a non-react wrapper class for the UI layer or a react object containing engine event methods
+class UI_Wrapper {
+    constructor() {
+        this.Component = new UI(); // TODO - Figure out how tf the react object will spawn
+        // Really need Ethan for structuring the UI Layer...
+    }
+    popup() {
+
+    }
+
+    menu(id, ...args) {
+
+    }
+}
+
+class UI extends React.Component { // TODO - Determine if this needs to be an instance of a react object
+    constructor(props) {
+        super(props);
+    }
+} // TODO Implement me!!!
+
+// Spawn UI Layer and bind to Engine
+const ui = new UI_Wrapper();
+Engine.bindCtx(ui); // This is nessecary
+
+export default ui.Component // TODO - Export a React Class to be applied to index.js
 
 // TODO - This file is mostly under the jurisdiction of Ethan.
 // Further information to be included in /docs/ui.md

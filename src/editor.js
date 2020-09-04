@@ -38,18 +38,29 @@ class Editor {
     }
 
     // TODO - write all of these ;-;
-    static async loadChart(...args) {}
-    static async saveChart(...args) {}
-    static async exportChart(...args) {}
-    static async addObject() {}
-    static async rmvObject() {}
-    static async addTimepoint() {}
-    static async rmvTimepoint() {}
-    static async setMeta() {}
-    static async cycleSnap() {}
-    static async cycleSpeed() {}
-    static async timeShift() {}
-    static getSchema() {
+    // Chart Admin
+    async loadChart(...args) {}
+    async saveChart(...args) {}
+    async exportChart(...args) {}
+    async closeChart() {}
+    async setMeta(key, ...args) {}
+
+    // Edit
+    async addObject(time, ...args) {}
+    async rmvObject(time) {}
+    async addTimepoint(time, ...args) {}
+    async rmvTimepoint(time) {}
+
+    // Editor State
+    async cycleSnap(up) {}
+    async setSnap(a, b) {}
+    async cycleSpeed(up) {}
+    async setSpeed(amount) {}
+    async timeShift(delta) {}
+    async zoom(amount) {}
+
+    // UI / Renderer Calls
+    getSchema() {
         return {
             layout: this.layout,
             style: this.style,
@@ -57,6 +68,6 @@ class Editor {
             menus: this.schema.menus
         };
     }
-    static async getView() {}
-    static async zoom(amount) {}
+    async buildView() {}
+    async getView(/* delta */) {}
 }

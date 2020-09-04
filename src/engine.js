@@ -69,20 +69,38 @@ function SpawnEngine() {// Privatized by closure - only to be accessed by method
     let editor = null; // Active Chart Editor object
     let session = new Login(null); // Active Login-Session object
     let socket = null; // Socket that manages back-end connection
+    let boundCtx = null; // Caller context required for user input events
 
     const cache = []; // Inactive Chart Editor array
     const errors = []; // Collection of runtime Errors / Warnings
 
-    // Relies on the above private methods to function
-    class Engine {
-        static async spawnEditor(id = "") {
-            // TODO - check for non-null editor and notify the user / save chart
+    // TODO - figure out if these are being done synchronously or asynchronously
+    const methods = {
+        async spawnEditor(id = "") {
+            // Disable editor spawning without a bound context
+            if (boundCtx === null)
+                return {
+                    code: -2 // Caller Context unbound
+                };
+
+            // Check for existing editor instance and prompt a saveclose
+            if (editor instanceof Editor) {
+                // TODO - Implement these UI interface methods in the class making these engine calls.
+                if (!await this.menu("saveclose", editor.chart.title))
+                    return {
+                        code: -1 // Cancelled by user
+                    };
+            }
+
+            // Run spawneditor operation
             return new Promise((resolve, reject) => {
+                // Handle editor close
                 if (!id) {
                     editor = null;
                     return resolve({code: 0});
                 }
 
+                // Verify that requested editor exists in cache
                 let index = Object.keys(EditorCache).indexOf[id];
                 if (index < 0) {
                     return reject({
@@ -91,6 +109,7 @@ function SpawnEngine() {// Privatized by closure - only to be accessed by method
                     });
                 }
 
+                // Spawn editor and return schema to caller
                 editor = new Editor(EditorCache[id]);
                 return resolve({
                     code: 0,
@@ -99,39 +118,46 @@ function SpawnEngine() {// Privatized by closure - only to be accessed by method
             }).catch(err => {
                 return err;
             });
-        }
-
-        static async loadChart(...args) {
+        },
+        loadChart(...args) {
             // TODO - Load a chart into currently loaded editor via user upload or backend storage
             // We'll only support user upload for now
-        }
-
-        static async saveChart(...args) {
+        },
+        saveChart(...args) {
             // TODO - Cache current chart in browser, store on backend if user has an account & space
-        }
+        },
+        exportChart(...args) {},
+        closeChart() { return editor.closeChart(); },
+        setMeta(key, ...args) { return editor.setMeta(key, ...args); },
+        addObject(time, ...args) { return editor.addObject(time, ...args); },
+        rmvObject(time) { return editor.rmvObject(time); },
+        addTimepoint(time, ...args) { return editor.addTimepoint(time, ...args); },
+        rmvTimepoint(time) { return editor.rmvTimepoint(time); },
+        cycleSnap(up) { return editor.cycleSnap(up); },
+        async setSnap(a, b) { return editor.setSnap(a, b); },
+        async cycleSpeed(up) { return editor.cycleSpeed(up); },
+        async setSpeed(amount) { return editor.setSpeed(amount); },
+        async timeShift(delta) { return editor.timeShift(delta); },
+        async zoom(amount) { return editor.zoom(amount); },
+        getSchema() { return editor.getSchema(); },
+        async buildView() { return editor.buildView(); },
+        async getView(/* delta */) { return editor.getView(); }
+    };
 
-        static async exportChart(...args) {}
-        static async addObject() {}
-        static async rmvObject() {}
-        static async addTimepoint() {}
-        static async rmvTimepoint() {}
-        static async setMeta() {}
-        static async cycleSnap() {}
-        static async cycleSpeed() {}
-        static async timeShift() {}
-        static async getSchema() {
-            return editor.getSchema();
-        }
-        static async getView() {
-            return editor.getView();
-        }
-        static async zoom(amount) {
-            return editor.zoom(amount);
-        }
-    }
-    return new Engine();
+    return Object.assign(
+        new (class Engine{}), // Mostly for debugging and `instanceof`
+        methods, // static class methods bound to the caller context
+        function bindCtx(ctx) {
+            boundCtx = ctx;
+            // This might be bad practice. we'll find out i guess shrugemoji lul ecksdee
+            // Hopefully this doesnt kill performance
+            for (const [key, ptr] of Object.keys(this)) {
+                if (key === "bindCtx") // Dont overwrite the context of this function or we'll break re-bindings
+                    continue;
+                this[key] = ptr.bind(boundCtx); // to bubble up things like menu events
+            }
+        });
 }
 
-const Engine = SpawnEngine();
-export default Engine;
+export default SpawnEngine;
 
