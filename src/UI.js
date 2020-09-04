@@ -34,25 +34,31 @@ const Engine = spawnEngine();
 const Renderer = spawnRenderer(Engine);
 
 // UI Class declaration - either a non-react wrapper class for the UI layer or a react object containing engine event methods
-class UI { // TODO - Determine if this needs to be an instance of a react object
+class UI_Wrapper {
     constructor() {
-
+        this.Component = new UI(); // TODO - Figure out how tf the react object will spawn
+        // Really need Ethan for structuring the UI Layer...
     }
-
     popup() {
 
     }
 
-    menu() {
+    menu(id, ...args) {
 
+    }
+}
+
+class UI extends React.Component { // TODO - Determine if this needs to be an instance of a react object
+    constructor(props) {
+        super(props);
     }
 } // TODO Implement me!!!
 
 // Spawn UI Layer and bind to Engine
-const ui = new UI();
+const ui = new UI_Wrapper();
 Engine.bindCtx(ui); // This is nessecary
 
-// export default // TODO - Export a React Class to be applied to index.js
+export default ui.Component // TODO - Export a React Class to be applied to index.js
 
 // TODO - This file is mostly under the jurisdiction of Ethan.
 // Further information to be included in /docs/ui.md
